@@ -45,7 +45,7 @@ View = 模式 + 尺寸->MeasureSpec 32位int值
 specMode + specSize
 三种mode
 UNSPECIFIED //父容器不对View做任何限制，系统内部使用
-EXACTLY //父容器检测出View的大小，View的大小就是SpecSize，LayoutParams 对应match_parent
+EXACTLY //父容器检测出View的大小，View的大小就是SpecSize或者LayoutParams 。对应match_parent
 AT_MOST //父容器指定容器大小，View的大小不能超过这个大小，对应wrap_content
 
 获取顶层view（decorView）的测量规格在viewRootImpl 中的getRootMeasureSpec（）方法中,主要由窗口大小和自身的LayoutParams属性来决定，
@@ -147,16 +147,81 @@ setShader（Shader shader）
 构造方法：
 
 ```
-LinearGradient(float x0, float y0, float x1, float y1,
-            @ColorInt int color0, @ColorInt int color1,
-            @NonNull TileMode tile) 
+LinearGradient(float x0, float y0, float x1, float y1, @NonNull @ColorInt int colors[], @Nullable float positions[], @NonNull TileMode tile)
 ```
 
-参数：x0，y0，x1，y1 ：渐变的两个端点的位置
+（x0,y0）: 渐变起始点坐标
 
-color0，color1 是端点的颜色
+（x1,y1）：渐变结束点坐标
 
-title ：端点范围之外的着色规则，类型是TileMode
+（color0）：渐变开始点颜色，16进制的颜色表示，必须带有透明度
+
+（color1）：渐变结束点颜色，16进制的颜色表示，必须带有透明度
+
+（colors）：渐变颜色数组，可以填多个颜色值
+
+（positions）：位置数组，position的取值范围[0,1],作用是指定某个位置的颜色值，如果传null，渐变就是线性变化
+
+（tile）：用于指定控件区域大于指定的渐变区域是，空白区域的颜色填充的方式，有如下三种方式：
+
+////               REPEAT, 绘制区域超过渲染区域的部分，重复排版
+////               CLAMP， 绘制区域超过渲染区域的部分，会以最后一个像素拉伸排版
+////               MIRROR, 绘制区域超过渲染区域的部分，镜像翻转排版
+
+##### 2.RadialGradient环形渲染
+
+```
+RadialGradient(float centerX, float centerY, float radius, @ColorInt int colors[], @Nullable float stops[], TileMode tileMode)
+```
+
+（centerX，centerY）：shader的中心坐标，开始渐变的坐标
+
+（radius）：渐变的半径
+
+（centerColor，edgeColor）：中心点渐变的颜色值，边界渐变的颜色值
+
+（colors）：渐变颜色数组
+
+（stops）：渐变位置数组，类似扫描渐变的positions数组，取值[0,1]，中心点为0，半径到达位置为1.0f
+
+（tileMode）：同线性渲染的tile
+
+##### 3.SweepGradient扫描渲染
+
+```
+SweepGradient(float cx, float cy, @ColorInt int color0,int color1)
+```
+
+（cx，cy）：渐变中心坐标
+
+（color0，color1）：渐变起始和结束的颜色值
+
+（colors，positions）：类似LinearGradient，用于多颜色渐变，positions为null是，根据颜色线性渐变
+
+##### 4.BitmapShader位图渲染
+
+```
+BitmapShader(@NonNull Bitmap bitmap, @NonNull TileMode tileX, @NonNull TileMode tileY)
+```
+
+（bitmap）：构造shader使用的bitmap
+
+（tileX）：X轴方向的TileMode
+
+（tileY）：Y轴方向的TileMode
+
+##### 5.ComposeShader组合渲染
+
+```
+ComposeShader(@NonNull Shader shaderA, @NonNull Shader shaderB, Xfermode mode)
+ComposeShader(@NonNull Shader shaderA, @NonNull Shader shaderB, PorterDuff.Mode mode)
+```
+
+（shaderA，shaderB）：要混合的两种shader
+
+（Xfermode mode）：组合两种shader颜色的模式
+
+（PorterDuff.Mode mode）：组合两种shader颜色的模式
 
 #### 4.Paint 颜色相关
 
