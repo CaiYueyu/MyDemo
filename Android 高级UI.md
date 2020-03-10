@@ -374,7 +374,7 @@ paint.setColorFilter(porterDuffColorFilter);
 
 ##### 5.ColorMatrixColorFilter滤镜（颜色数组）
 
-1.作用：处理图像色彩效果
+1.作用：通过传入色彩矩阵来处理图像色彩效果
 
 2.构造方法
 
@@ -510,3 +510,53 @@ $$
 1.改变颜色的offset（偏移量）的值；
 
 2.改变对应的RGBA值。
+
+### 三.Canvas详解
+
+#### 1.概念
+
+画布，通过画笔绘制几何图形，文本，路径和位图等
+
+#### 2.常用API
+
+常用API分为绘制图形，位置变换，状态保存和回复
+
+```
+/* 绘制几何图形，文本，位图等常用API */
+//在指定坐标绘制位图
+void drawBitmap(@NonNull Bitmap bitmap, float left, float top, @Nullable Paint paint) 
+//根据给定的起始点和结束点直接绘制连线
+void drawLine(float startX, float startY, float stopX, float stopY,
+            @NonNull Paint paint)
+//根据指定的path，绘制连线
+void drawPath(@NonNull Path path, @NonNull Paint paint) 
+//根据给定的坐标，绘制点
+drawPoint(float x, float y, @NonNull Paint paint)
+//根据给定的坐标，绘制文本
+void drawText(@NonNull String text, float x, float y, @NonNull Paint paint)
+
+/* 位置，形状变换等常用API */
+//平移操作
+translate(float dx, float dy) 
+//缩放操作
+scale(float sx, float sy)
+//旋转操作
+rotate(float degrees)
+//倾斜操作
+skew(float sx, float sy)
+//切割操作，参数指定区域内可以继续绘制
+clipXXX（....）
+//反向切割操作，参数指定区域内不可绘制
+clipOut(....)
+//通过matrix实现平移，缩放，旋转等操作
+setMatrix(@Nullable Matrix matrix) 
+```
+
+#### 3.状态保存和回复
+
+作用：Canvas调用了translate，scale，rotate，skew，clipRect等变换后，后续的操作都是基于变换后的Canvas，都会受到影响，对于后续的操作很不方便，所以Canvas提供了save，saveLayer，saveLayerAlpha，restore，restoreToCount来保存和恢复状态。
+
+```
+
+```
+
