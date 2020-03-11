@@ -556,5 +556,87 @@ setMatrix(@Nullable Matrix matrix)
 
 作用：Canvas调用了translate，scale，rotate，skew，clipRect等变换后，后续的操作都是基于变换后的Canvas，都会受到影响，对于后续的操作很不方便，所以Canvas提供了save，saveLayer，saveLayerAlpha，restore，restoreToCount来保存和恢复状态。
 
+```
+saveLayer则是通过创建一个固定大小的图层，保存该图层，后续的绘制基于这个图层之上
+```
 
+### 三.Path详解
+
+#### 1.概念：
+
+路径，可用于绘制直线，曲线构成几何路径，，还可以根据路径绘制文字
+
+#### 2.常用API
+
+常用的API如移动，连线，闭合，添加图形等
+
+```
+mPath.moveTo(100, 70); //移动坐标
+//一阶贝塞尔曲线，表示的是一条直线
+mPath.lineTo(140, 800);//连线    
+mPath.rLineTo(40,730);   //等同于上一行代码效果
+mPath.close();//设置曲线是否闭合
+        
+//添加子图形addXXX
+mPath.addArc(200, 200, 400, 400, -225, 225);        //添加弧形
+
+//Path.Direction.CW表示顺时针方向绘制，CCW表示逆时针方向
+mPath.addRect(500, 500, 900,900, Path.Direction.CW);
+//添加一个圆
+mPath.addCircle(700, 700, 200, Path.Direction.CW);
+//添加一个椭圆
+mPath.addOval(0,0,500,300, Path.Direction.CCW);
+
+//              //追加图形
+//        //xxxTo画线
+//        mPath.arcTo(400, 200, 600, 400, -180, 225, false);
+//
+//        //forceMoveTo，true，绘制时移动起点，false，绘制时连接最后一个点与圆弧起点
+//        mPath.moveTo(0, 0);
+//        mPath.lineTo(100, 100);
+//        mPath.arcTo(400, 200, 600, 400, 0, 270, false);
+
+//              //添加一个路径
+//        mPath.moveTo(100, 70);
+//        mPath.lineTo(140, 180);
+//        mPath.lineTo(250, 330);
+//        mPath.lineTo(400, 630);
+//        mPath.lineTo(100, 830);
+//
+//        Path newPath = new Path();
+//        newPath.moveTo(100, 1000);
+//        newPath.lineTo(600, 1300);
+//        newPath.lineTo(400, 1700);
+//        mPath.addPath(newPath);
+
+//              //添加圆角矩形， CW顺时针，CCW逆时针
+//        RectF rectF5 = new RectF(200, 800, 700, 1200);
+//        mPath.addRoundRect(rectF5, 20, 20, Path.Direction.CCW);
+//
+//        //画二阶贝塞尔曲线
+//        mPath.moveTo(300, 500);
+////        mPath.quadTo(500, 100, 800, 500);
+//        //参数表示相对位置，等同于上面一行代码
+//        参数相当于上面一行代码的x，y参数减去moveTo方法的x，y参数
+//        mPath.rQuadTo(200, -400, 500, 0);
+
+        //画三阶贝塞尔曲线
+        mPath.moveTo(300, 500);
+//        mPath.cubicTo(500, 100, 600, 1200, 800, 500);
+        //参数表示相对位置，等同于上面一行代码，
+        //参数相当于上面一行代码的x，y参数减去moveTo方法的x，y参数
+        mPath.rCubicTo(200, -400, 300, 700, 500, 0);
+```
+
+#### 3.贝塞尔曲线
+
+贝塞尔曲线是用一系列点来控制曲线状态的，我们将这些点分为两类，一类是数据点，一类是控制点
+
+贝塞尔曲线分为多阶：
+
+一阶：没有控制点，仅有两个数据点
+
+二阶：两个数据点，一个控制点
+
+三阶：两个数据点，两个控制点
 
