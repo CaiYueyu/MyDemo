@@ -556,7 +556,5 @@ setMatrix(@Nullable Matrix matrix)
 
 作用：Canvas调用了translate，scale，rotate，skew，clipRect等变换后，后续的操作都是基于变换后的Canvas，都会受到影响，对于后续的操作很不方便，所以Canvas提供了save，saveLayer，saveLayerAlpha，restore，restoreToCount来保存和恢复状态。
 
-```
 
-```
 
