@@ -1,6 +1,8 @@
+
+
 ### 一.AndroidUI绘制流程
 
-#### 1.setCotentView之后做了什么?
+#### 1.DecorView加载流程
 
 1.在phonewindow对象里面的setContentView方法中，调用了installDecor（）方法
 2.installDecor方法主要处理两件事，分别是generateDecor()和generateLayout方法
@@ -94,13 +96,15 @@ View的绘制 ：
 
 重写onMeasure -->onLayout(容器)-->onDraw
 
-### 二.Paint画笔高级使用
+### 二.Paint Cavans高级绘制
 
-#### 1.Paint概念
+#### 1.Paint画笔高级使用
+
+##### 1.Paint概念
 
 画笔，保存了绘制几何图形，文本和位图的样式和颜色信息
 
-#### 2.常用API
+##### 2.常用API
 
 ` mPaint = new Paint(); //初始化
   mPaint.setColor(Color.RED);// 设置颜色
@@ -126,7 +130,7 @@ View的绘制 ：
   mPaint.measureText(str); //获取文本的宽
   mPaint.getFontMetrics(); //获取字体度量对象`
 
-#### 3.setShader（）
+##### 3.setShader（）
 
 setShader（Shader shader）
 
@@ -142,7 +146,7 @@ setShader（Shader shader）
 
 5.ComposeShader：组合渲染，例如LinearGradient  + BitmapShader
 
-##### 1.LinearGradient线性渲染
+###### 1.LinearGradient线性渲染
 
 构造方法：
 
@@ -168,7 +172,7 @@ LinearGradient(float x0, float y0, float x1, float y1, @NonNull @ColorInt int co
 ////               CLAMP， 绘制区域超过渲染区域的部分，会以最后一个像素拉伸排版
 ////               MIRROR, 绘制区域超过渲染区域的部分，镜像翻转排版
 
-##### 2.RadialGradient环形渲染
+###### 2.RadialGradient环形渲染
 
 ```
 RadialGradient(float centerX, float centerY, float radius, @ColorInt int colors[], @Nullable float stops[], TileMode tileMode)
@@ -186,7 +190,7 @@ RadialGradient(float centerX, float centerY, float radius, @ColorInt int colors[
 
 （tileMode）：同线性渲染的tile
 
-##### 3.SweepGradient扫描渲染
+###### 3.SweepGradient扫描渲染
 
 ```
 SweepGradient(float cx, float cy, @ColorInt int color0,int color1)
@@ -198,7 +202,7 @@ SweepGradient(float cx, float cy, @ColorInt int color0,int color1)
 
 （colors，positions）：类似LinearGradient，用于多颜色渐变，positions为null是，根据颜色线性渐变
 
-##### 4.BitmapShader位图渲染
+###### 4.BitmapShader位图渲染
 
 ```
 BitmapShader(@NonNull Bitmap bitmap, @NonNull TileMode tileX, @NonNull TileMode tileY)
@@ -210,7 +214,7 @@ BitmapShader(@NonNull Bitmap bitmap, @NonNull TileMode tileX, @NonNull TileMode 
 
 （tileY）：Y轴方向的TileMode
 
-##### 5.ComposeShader组合渲染
+###### 5.ComposeShader组合渲染
 
 ```
 ComposeShader(@NonNull Shader shaderA, @NonNull Shader shaderB, Xfermode mode)
@@ -223,9 +227,9 @@ ComposeShader(@NonNull Shader shaderA, @NonNull Shader shaderB, PorterDuff.Mode 
 
 （PorterDuff.Mode mode）：组合两种shader颜色的模式
 
-#### 4.Paint 颜色相关
+##### 4.Paint 颜色相关
 
-##### 1.图层混合模式 PorterDuff.Mode
+###### 1.图层混合模式 PorterDuff.Mode
 
 概念：将所绘制图形的像素与Canvas中所对应位置的像素按照一定规则混合，形成新的像素值，更新Canvas中最终的像素颜色值。有18种模式
 
@@ -287,7 +291,7 @@ int layerId = canvas.saveLayer(0,0, getWidth(), getHeight(), mPaint, Canvas.ALL_
         setLayerType(LAYER_TYPE_SOFTWARE,null);//使用一个Bitmap来缓冲
 ```
 
-##### 2.图层混合的18种模式
+###### 2.图层混合的18种模式
 
 ```
 //其中Sa全称为Source alpha表示源图的Alpha通道；Sc全称为Source color表示源图的颜色；Da全称为Destination alpha表示目标图的Alpha通道；Dc全称为Destination color表示目标图的颜色，[...,..]前半部分计算的是结果图像的Alpha通道值，“,”后半部分计算的是结果图像的颜色值。
@@ -336,7 +340,7 @@ int layerId = canvas.saveLayer(0,0, getWidth(), getHeight(), mPaint, Canvas.ALL_
     };
 ```
 
-##### 3.滤镜效果 LightColorFilter
+###### 3.滤镜效果 LightColorFilter
 
 1.作用：可以模仿光照效果
 
@@ -353,7 +357,7 @@ LightingColorFilter lighting = new LightingColorFilter(0x00ffff,0x000000)
 paint.setColorFilter(lighting)
 ```
 
-##### 4.PorterDuffColorFilter滤镜（图层混合）
+###### 4.PorterDuffColorFilter滤镜（图层混合）
 
 1.作用 ：根据构造方法传入的color创建一个新的图层，再根据混合模式进行图层混合
 
@@ -372,7 +376,7 @@ PorterDuffColorFilter porterDuffColorFilter = new PorterDuffColorFilter(Color.RE
 paint.setColorFilter(porterDuffColorFilter);
 ```
 
-##### 5.ColorMatrixColorFilter滤镜（颜色数组）
+###### 5.ColorMatrixColorFilter滤镜（颜色数组）
 
 1.作用：通过传入色彩矩阵来处理图像色彩效果
 
@@ -511,13 +515,13 @@ $$
 
 2.改变对应的RGBA值。
 
-### 三.Canvas详解
+#### 2.Canvas详解
 
-#### 1.概念
+##### 1.概念
 
 画布，通过画笔绘制几何图形，文本，路径和位图等
 
-#### 2.常用API
+##### 2.常用API
 
 常用API分为绘制图形，位置变换，状态保存和回复
 
@@ -552,7 +556,7 @@ clipOut(....)
 setMatrix(@Nullable Matrix matrix) 
 ```
 
-#### 3.状态保存和回复
+##### 3.状态保存和回复
 
 作用：Canvas调用了translate，scale，rotate，skew，clipRect等变换后，后续的操作都是基于变换后的Canvas，都会受到影响，对于后续的操作很不方便，所以Canvas提供了save，saveLayer，saveLayerAlpha，restore，restoreToCount来保存和恢复状态。
 
@@ -560,13 +564,13 @@ setMatrix(@Nullable Matrix matrix)
 saveLayer则是通过创建一个固定大小的图层，保存该图层，后续的绘制基于这个图层之上
 ```
 
-### 三.Path详解
+#### 3.Path详解
 
-#### 1.概念：
+##### 1.概念：
 
-路径，可用于绘制直线，曲线构成几何路径，，还可以根据路径绘制文字
+路径，可用于绘制直线，曲线构成几何路径，，还可以根据路径绘制文字。
 
-#### 2.常用API
+##### 2.常用API
 
 常用的API如移动，连线，闭合，添加图形等
 
@@ -628,7 +632,7 @@ mPath.addOval(0,0,500,300, Path.Direction.CCW);
         mPath.rCubicTo(200, -400, 300, 700, 500, 0);
 ```
 
-#### 3.贝塞尔曲线
+##### 3.贝塞尔曲线
 
 贝塞尔曲线是用一系列点来控制曲线状态的，我们将这些点分为两类，一类是数据点，一类是控制点
 
@@ -640,3 +644,293 @@ mPath.addOval(0,0,500,300, Path.Direction.CCW);
 
 三阶：两个数据点，两个控制点
 
+关于贝塞尔曲线，更多参考资料可以参考该博文：
+
+[自带美感的贝塞尔曲线原理与实战](https://juejin.im/post/5c3988516fb9a049d1325c83)
+
+#### 4.PathMeasure详解
+
+##### 1.概念
+
+路径测量，一个用来测量Path的工具类
+
+Path的绘制有很多种方法，例如Android API，Bezier曲线或者数学函数表达式等，而高级的动画都会要求这个Path的坐标点是可控的，这样才能更好地扩展基于Path的动画。而如何确定Path点的坐标，这就用到了工具类PathMeasure。
+
+##### 2.常用的API
+
+常用API如Path长度测量，Path跳转，Path片段获取等
+
+```
+PathMeasure pathMeasure = new PathMeasure() //创建一个PathMeasure对象
+pathMeasure.setPath(path,true) //设置关联Path
+PathMeasure (Path path, boolean forceClosed) //在构造方法里关联Path
+gentLength() //获取计算的长度
+getSegment(float startD, float stopD, Path dst, boolean startWithMoveTo) //获取路径的片段，前两个参数表示起止点坐标，dst表示截取path输出结果，startWithMoveTo表示是否从上一次截取的终点处开始截取
+pathMeasure.nextContour();//跳转到下一条曲线，跳转成功返回true，失败返回false
+
+getPosTan(float distance, float[] pos, float[] tan) //获取某点坐标及其切线坐标
+//        pathMeasure.getPosTan(pathMeasure.getLength() * mFloat,pos,tan);
+//        Log.e("TAG", "onDraw: pos[0]="+pos[0]+";pos[1]="+pos[1]);
+//        Log.e("TAG", "onDraw: tan[0]="+tan[0]+";tan[1]="+tan[1]);
+//
+//        //计算出当前的切线与x轴夹角的度数，***重要***
+//        double degrees = Math.atan2(tan[1], tan[0]) * 180.0 / Math.PI;
+
+boolean getMatrix(float distance, Matrix matrix, int flags) //distance表示距离path起点的长度，范围是0到path的长度，matrix会将信息存放在matrix里面，flags指定存放信息的类型，它的值有两个：
+POSISTION_MATRIX_FLAG //位置信息
+TANGENT_MATRIX_FLAG //当前点在曲线上的方向，对应getPostTan上float[] tan数据
+实例 ：pathMeasure.getMatrix(pathMeasure.getLength() * mFloat, mMatrix, PathMeasure.POSITION_MATRIX_FLAG | PathMeasure.TANGENT_MATRIX_FLAG);
+```
+
+**forceClosed参数对绑定的Path不会产生任何影响，只会对PathMeasure 的测量结果有影响。当forceClosed为true，在测量path长度时，会自动补上使其闭合，长度就为闭合的长度。但是forceClosed无论true还是false，都不影响Path本身的值。**
+
+**startWithMoveTo为true时，表示截取一部分存入dst中，并且使用moveTo保持截取得到的Path第一个点位置不变。**
+
+**getMarix相对于getPostTan方法在使用上更简单，因为把位置和角度都保存在marix对象中**
+
+
+
+关于更多的PathMeasure，请参考 ：[Android动画——PathMeasure](https://www.jianshu.com/p/2b9055c2ee31)
+
+### 三.事件传递机制
+
+#### 1.事件的定义：
+
+当用户触摸屏幕时，将产生触摸行为（Touch事件）。
+
+事件的类型有四种：
+
+ACTION_DOWN : 手指刚接触屏幕
+
+ACTION_UP : 手指从屏幕上松开
+
+ACTION_MOVE : 手指在屏幕上滑动
+
+ACTION_CANCEL :非人为因素取消
+
+#### 2.事件序列：
+
+1.点击屏幕后松开，事件序列为DOWN->UP
+
+2.点击屏幕后滑动一会在松开，事件序列为：DOWN->MOVE->....MOVE->UP
+
+![事件序列](data:image/png;base64,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)
+
+#### 3.事件分发对象
+
+1.Activity ：控制生命周期&处理事件
+
+2.ViewGroup ：一组View的集合（含多个子View）
+
+3.View ： 所有的UI组件类
+
+#### 4.事件分发的主要方法：
+
+1.dispatchTouchEvent(MotionEvent ev) : 用来进行事件分发
+
+2.onInterceptTouchEvent(MotionEvent ev) : 判断是否拦截事件（该方法只存在ViewGroup中）
+
+3.onTouchEvent（MotionEvent ev）：消费事件
+
+#### 5.ViewGroup事件分发
+
+如下伪代码表示：
+
+```
+private TouchTarget mFirstTouchTarget; //记录第一个能够消费的子View，这是个一个链表，保存能够接收事件进行消费的子View
+public boolean dispatchTouchEvent(MotionEvent ev){
+	boolean handled = false;
+	final boolean intercept;
+	if(ACTION_DOWN || ！mFirstTouchTarget){
+		//如果是down事件或者存在可以消费这个事件的子View
+		final boolean disallowIntercept = (mGroupFlags & FLAG_DISALLOW_INTERCEPT) != 0;
+		if(!disallowIntercept){
+			如果子View没有禁止父View拦截事件，是否拦截取决于该ViewGroup是否拦截事件
+			intercepted = onInterceptTouchEvent(ev);
+		}else{
+			//子View禁止了父View拦截
+			intercepted = false;
+		}
+	}else{
+		//不存在可以消费事件的子View，并且不是ACTION_DOWN事件，默认拦截
+		intercepted = true;
+	}
+	if(!intercepted){   //父View不拦截事件的情况
+		 for (int i = childrenCount - 1; i >= 0; i--) {
+		 	//遍历所有的子View
+		 	 final int childIndex = getAndVerifyPreorderedIndex(childrenCount,
+             						i, customOrder); //如果有两个子View相交，取上层View
+             final View child = getAndVerifyPreorderedView(
+                                    preorderedList, children, childIndex);
+             
+             if(!canViewReceivePointerEvents(child) || !isTransformedTouchPointInView){
+             	//如果子View不再触摸区域，或者子View正在执行动画，那么跳过
+             	continue；
+             }    
+             newTouchTarget = getTouchTarget(child); //从touchTarget链表查找是否有保存
+             if(dispatchTransformedTouchEvent(ev, false, child, idBitsToAssign)) {
+             	//调用dispatchTransformedTouchEvent()方法，递归遍历child的子View，如果能找到消费的子View，则把Child保存到可消费链表touchTarget里面,跳出循环
+                newTouchTarget = addTouchTarget(child, idBitsToAssign);
+                alreadyDispatchedToNewTouchTarget = true;  
+                break;
+             }		 	
+	}
+	if(!mFirstTouchTarget){
+        //找不到可消费事件的子View
+        handled = dispatchTransformedTouchEvent(ev, canceled, null,
+        TouchTarget.ALL_POINTER_IDS);		 	
+	 }else{
+         //这里主要处理MOVE和UP事件，遍历touchTarget链表 查找可消费事件的View，进行事件传递
+         TouchTarget target = mFirstTouchTarget;
+         while (target != null){
+             final TouchTarget next = target.next;
+             if (alreadyDispatchedToNewTouchTarget && target == newTouchTarget) {
+             	handled = true;//如果之前已经传递过了，则表示消费了，事件将停止传递
+         	}else{
+         		if (dispatchTransformedTouchEvent(ev, cancelChild,
+         				target.child, target.pointerIdBits)) {
+         			handled = true;
+         			//事件进行向下传递，如果返回true，则消费
+         		}                	
+         	}            	
+        	 target = next;
+         } 		 	
+      }
+	}
+	return handled；
+}
+```
+
+dispatchTransformedTouchEvent()方法
+
+```
+private boolean dispatchTransformedTouchEvent(MotinEvent event,boolean cancel,View child,int desiredPointerIdBits){
+	final boolean handled;
+	...
+	if(child == null){
+		handled = super.dispatchTouchEvent(event);//找不到子View，调用View的dispatchTouchEvent(event)
+	}else{
+		handled = child.dispatchTouchEvent(event);//调用View的dispatchTouchEvent(event)
+	}
+	event.setAction(oldAction);
+	return handled;
+}
+```
+
+ViewGroup的拦截事件，默认返回false
+
+```
+public boolean onInterceptTouchEvent(MotionEvent ev){return false}
+```
+
+#### 6.View的事件分发
+
+```
+public boolean dispatchTouchEvent(MotionEvent event) {
+	
+    boolean result = false;
+    //当前View是否可见（未被其他窗口遮盖着且未隐藏）
+    if (onFilterTouchEventForSecurity(event)) {
+        ListenerInfo li = mListenerInfo;
+        if (li != null && li.mOnTouchListener != null
+         && (mViewFlags & ENABLED_MASK) == ENABLED
+            && li.mOnTouchListener.onTouch(this, event)) {
+            //如果设置了TouchListener，先响应TouchListener.onTouch
+            result = true;
+        }
+
+	if (!result && onTouchEvent(event)) {
+		//如果TouchListener.onTouch返回了false才执行onTouchEvent
+		result = true;
+	}
+}
+```
+
+#### 7.View的事件消费
+
+```
+public boolean onTouchEvent(MotionEvent event){
+	...
+    final boolean clickable = ((viewFlags & CLICKABLE) == CLICKABLE
+    	|| (viewFlags & LONG_CLICKABLE) == LONG_CLICKABLE)
+    	|| (viewFlags & CONTEXT_CLICKABLE) == CONTEXT_CLICKABLE;
+	//如果当前View是DISABLED状态且是可点击/可长按则会消费调事件，不让它继续传递
+	if ((viewFlags & ENABLED_MASK) == DISABLED) {
+		if (action == MotionEvent.ACTION_UP && (mPrivateFlags & PFLAG_PRESSED) != 0) {
+			setPressed(false);
+		}
+		mPrivateFlags3 &= ~PFLAG3_FINGER_DOWN;
+		// A disabled view that is clickable still consumes the touch
+		// events, it just doesn't respond to them.
+		return clickable;
+	}
+	//如果设置了onTouchDelegate，则会将事件交给代理者处理，直接return true
+    if (mTouchDelegate != null) {
+    	if (mTouchDelegate.onTouchEvent(event)) {
+    		return true;
+    	}
+    }
+    if (clickable || (viewFlags & TOOLTIP) == TOOLTIP) {
+    	switch (action) {
+    		case MotionEvent.ACTION_UP://抬起，判断是否处理点击事件
+    		break;
+    		case MotionEvent.ACTION_DOWN://按下，处理长按事件
+    		break;
+    		case MotionEvent.ACTION_MOVE://移动，检测触摸是否划出了控件，移除响应事件
+    		break;
+    	}
+    	return true;
+    }
+    return false;
+}
+```
+
+#### 8.View事件分发整体流程
+
+![](https://lh3.googleusercontent.com/proxy/xB1xrGNYc6BMAdIMvKeF8YRvkb7Kesz64EAvAwVowMkgfxUsHCo4F_rrhuWep4UxfNO3TPTipdiJ5NVoczhAWDBCjHCelHBrlSDDYsSpaV5WAkgx76U0hinbfymkkxrghTkxW3XDoi-9Y7bvDnQurmV2y62hD4QZqD0b08-9b5Tcktdi9OVsdJex2EChcc0DJhtPuA)
+
+#### 9.事件分发结论
+
+1.一个事件序列从手指触摸到屏幕到手指离开屏幕，以DOWN开始，经过不定数的MOVE，以UP结束
+
+2.正常情况下，**一个事件序列**只能被一个View拦截并且消费
+
+3.某个View一旦决定拦截，那么这个事件序列将由它的onTouchEvent处理，并且它的onInterceptTouchEvent不会再调用。
+
+4.**某个View一旦开始处理事件，如果它不消费ACTION_DOWN事件（onTouchEvent返回false），那么同一事件序列中的其他事件都不会再交给它处理**，并且重新交由它的父元素处理（负元素onTouchEvent被调用）
+
+5.事件传递过程由外向内，先给父元素，再由父元素分发给子View，通过requestDisallowInterceptTouchEvent方法可以在子View中干预父元素的事件分发过程，**但ACTION_DOWN除外**。
+
+6.ViewGroup默认不拦截任何事件，onInterceptTouchEvent默认返回false。View没有onInterceptTouchEvent方法，一旦有点击事件传递给它，那么它的onTouchEvent方法就会被调用
+
+ 7.View的onTouchEvent默认会消耗事件（返回true）**，除非它是不可点击的（clickable和longClickable同时为false）**，View的longClickable默认是false，clickable则分情况，比如Button默认就是true，TextView默认为false
+
+8.View的enable属性不会影响onTouchEvent的默认返回值，只要它的clickable或者longClickable有一个是true，那么就会消费（onTouchEvent返回true）
+
+9.View响应onClick前提是可点击的，并且收到ACTION_DOWN和ACTION_UP的事件，并且受长按事件影响，当长按事件返回true，onClick不会响应
+
+10.onLongClick在ACTION_DOWN里面判断是否进行响应，想要执行长按事件该View必须是longClickable并且设置了OnLongClickListener
+
+11.**View的onTouch优先级比onClick优先级高**，如果onTouch返回true，则onClick不再调用。只有ACTION_UP才会产生onClick事件，View只要设置了onClick监听，表示消费了事件
+
+
+
+### 四.属性动画
+
+#### 1.动画本质：
+
+动画实质上就是改变View在某一个时间点的样式属性，比如通过一个线程每隔一段事件，通过设置View.setX(index++)的值，也能产生动画，这就是属性动画的原理，属性动画实际上就是通过调用View里面的方法，属性动画做了一层封装。
+
+#### 2.动画任务
+
+1.控件
+
+2.时长
+
+3.起始值，结束值
+
+4.差值器
+
+#### 3.关键帧
+
+为什么要将动画分解成不同的关键帧？ 原因是动画需要时间开销才能完成的，如果不给出关键动画，动画的过程将无法控制。在不同的时间点，控件的状态也不一样的。
