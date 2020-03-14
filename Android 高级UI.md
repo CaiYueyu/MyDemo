@@ -714,7 +714,7 @@ ACTION_CANCEL :非人为因素取消
 
 2.点击屏幕后滑动一会在松开，事件序列为：DOWN->MOVE->....MOVE->UP
 
-![事件序列](data:image/png;base64,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)
+![](.\image\事件序列.png)
 
 #### 3.事件分发对象
 
@@ -887,7 +887,7 @@ public boolean onTouchEvent(MotionEvent event){
 
 #### 8.View事件分发整体流程
 
-![](https://lh3.googleusercontent.com/proxy/xB1xrGNYc6BMAdIMvKeF8YRvkb7Kesz64EAvAwVowMkgfxUsHCo4F_rrhuWep4UxfNO3TPTipdiJ5NVoczhAWDBCjHCelHBrlSDDYsSpaV5WAkgx76U0hinbfymkkxrghTkxW3XDoi-9Y7bvDnQurmV2y62hD4QZqD0b08-9b5Tcktdi9OVsdJex2EChcc0DJhtPuA)
+![](.\image\事件分发模型.png)
 
 #### 9.事件分发结论
 
@@ -921,16 +921,59 @@ public boolean onTouchEvent(MotionEvent event){
 
 动画实质上就是改变View在某一个时间点的样式属性，比如通过一个线程每隔一段事件，通过设置View.setX(index++)的值，也能产生动画，这就是属性动画的原理，属性动画实际上就是通过调用View里面的方法，属性动画做了一层封装。
 
-#### 2.动画任务
+当然，属性动画的作用对象是任意JAVA对象，不仅仅局限于View对象。
 
-1.控件
+具体的工作原理逻辑如下：
 
-2.时长
+![](.\image\属性动画的工作原理.webp)
 
-3.起始值，结束值
+#### 2.两种属性动画类
 
-4.差值器
+1.`ValueAnimator` 是属性动画机制中 最核心的一个类，通过不断控制值的变化，**再不断 手动 赋给对象的属性，从而实现动画效果**，如下图：
+
+![](.\image\属性动画的工作原理.webp)
+
+2.ObjectAnimator类，直接对对象的属性值进行改变操作，从而实现动画效果
+
+```
+1.如直接改变 View的 alpha 属性 从而实现透明度的动画效果
+2.继承自ValueAnimator类，即底层的动画实现机制是基于ValueAnimator类
+```
+
+本质原理： 通过不断控制 值 的变化，再不断 **自动** 赋给对象的属性，从而实现动画效果，
+
+![](.\image\ObjectAnimator类.webp)
 
 #### 3.关键帧
 
-为什么要将动画分解成不同的关键帧？ 原因是动画需要时间开销才能完成的，如果不给出关键动画，动画的过程将无法控制。在不同的时间点，控件的状态也不一样的。
+
+
+一个动画在特定的时间点上的状态。为什么要将动画分解成不同的关键帧？ 原因是动画需要时间开销才能完成的，如果不给出关键动画，动画的过程将无法控制。在不同的时间点，控件的状态也不一样的。
+
+动画架构分析图如下
+
+![](.\image\动画架构分析图.png)
+
+由上图可知，由于关键帧直接是有时间间隔的，所以需要在两个关键帧之间去实现补帧，这就需要用到**估值器TypeEvaluator和插值器TimeInterpolator **
+
+#### 4.估值器和插值器
+
+1.**TimeInterpolator（时间插值器）：**
+
+根据时间流逝的百分比计算出当前属性值改变的百分比。**简单来说就是改变对象属性的速度快慢**，比如View缩放越来越快，或者越来越慢。
+
+2.**TypeEvaluator（类型估值算法，即估值器）：**
+
+根据当前**属性改变的百分比**来计算改变后的属性值。估值器一般就一个重要方法，就是根据百分比来计算改变后的属性值，如IntEvaluator所示
+
+```
+   //参数：fraction ->百分比，这个参数非常重要
+   //开始值
+   //结束值，
+   public Integer evaluate(float fraction, Integer startValue, Integer endValue) {
+        int startInt = startValue;
+        return (int)(startInt + fraction * (endValue - startInt));
+    }
+```
+
+对于 **插值器和估值器** 来说，除了系统提供的外，我们还可以**自定义**。实现方式也很简单，因为插值器和估值器都是一个接口，且内部都只有一个方法，我们只要实现接口就可以了。
