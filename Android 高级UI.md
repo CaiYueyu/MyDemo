@@ -977,3 +977,143 @@ public boolean onTouchEvent(MotionEvent event){
 ```
 
 对于 **插值器和估值器** 来说，除了系统提供的外，我们还可以**自定义**。实现方式也很简单，因为插值器和估值器都是一个接口，且内部都只有一个方法，我们只要实现接口就可以了。
+
+### 五.屏幕适配
+
+#### 1.限定符适配（通过加载不同的资源文件）
+
+优势：
+
+1.使用简单，无需开发者手动指定
+
+2.google推荐，由系统自己判断
+
+3.适配通过不同的xml布局完成，无需要代码中额外再写
+
+劣势：
+
+1.增加apk大小，xml越来越多
+
+2.不能适配奇葩机型，比如手表
+
+#### 2.百分比适配
+
+需要导入官方包：com.android.support:percent : 28.0.0
+
+app:layout_widthPercent = "50%"
+
+优势：
+
+1.通过百分比定义高宽，比较方便
+
+2.抛弃px dp单位，通过百分比实现，可以在布局完成适配
+
+3.对开发者工作量小
+
+略势：
+
+1.五大布局不能直接使用，所有自定义的布局也必须继承PercentXXXLayout
+
+
+
+**自定义百分比**
+
+```
+1.自定义一个父容器继承ViewGroup，如
+public class RelativePercentLayout extends RelativeLayout
+2.重写一个LayoutParams继承自RelativeLayout.LayoutParams
+3.在LayoutParams构造方法中，通过
+ TypedArray a = c.obtainStyledAttributes(attrs, R.styleable.PercentLayout);
+ 去获取xml文件中的自定义属性，进行解析
+4.重写LayoutParams generateLayoutParams(AttributeSet attrs)，返回第二步重写的LayoutParams
+5.在onMeasure方法中去获取父容器的宽高
+6.遍历子View，通过设置子View的LayoutParams进行宽高，margin的百分比缩放
+```
+
+
+
+#### 3.代码动态适配
+
+优势：等比缩放，UI效果一致性
+
+略势：代码侵入性太高
+
+方法：主要就是通过创建工具类，通过获取屏幕的宽高/主流的分辨率手机的宽高，获取一个缩放比例系数，在创建View的时候，通过调用工具类方法，进行缩放。
+
+#### 4.屏幕适配常见方式
+
+1.布局适配
+
+-避免写死控件尺寸，使用wrap_content，match_parent
+
+-设置权重 LinearLayout xxx :layout_weight = "0.5"
+
+-RelativeLayout xxx:layout_centerInParent="true"
+
+-ContraintLayout(约束布局)
+
+​	xxxx : layout_constraintLeft_toLeftOf = "parent"
+
+-Percent-support-lib xxx : layout_widthPercent = "30%"
+
+2.图片资源适配
+
+-.9图或者SVG图实现缩放
+
+-备用位图匹配不同分辨率（不同分辨率res目录下放置不同图片）
+
+3.用户流程适配（比如手机和平板，显示内容不一样等）
+
+-根据业务逻辑执行不同的跳转
+
+-根据别名展示不同的界面
+
+4.限定符适配
+
+-分辨率限定符：drawable-hdpi,drawable-xdpi
+
+-尺寸限定符：layout-small,layout-large
+
+-最小宽度限定符：value-sw360dp,value-sw384dp...
+
+-屏幕方向限定符：layout-land，layout-port
+
+5刘海屏适配
+
+-Android 9.0官方适配
+
+-华为，vivo，oppo
+
+#### 5.修改像素密度
+
+通过修改density,scaleDensity,densityDpi值，直接更改系统内部对于目标尺寸而言的像素密度
+
+1.density ： 表示屏幕的像素密度 = 像素点数/屏幕
+
+2.scaleDensity ：字体缩放比例，默认等于density
+
+3.densityDpi ：屏幕每一英寸上有多少像素点
+
+```
+private static final float  WIDTH = 320;//参考设备的宽，单位是dp 320 / 2 = 160
+private static float appDensity;//表示屏幕密度
+private static float appScaleDensity; //字体缩放比例，默认appDensity
+//获取当前app的屏幕显示信息
+DisplayMetrics displayMetrics = application.getResources().getDisplayMetrics();
+
+//计算目标值density, scaleDensity, densityDpi
+float targetDensity = displayMetrics.widthPixels / WIDTH; // 1080 / 360 = 3.0
+float targetScaleDensity = targetDensity * (appScaleDensity / appDensity);
+int targetDensityDpi = (int) (targetDensity * 160);
+//替换Activity的density, scaleDensity, densityDpi
+DisplayMetrics dm = activity.getResources().getDisplayMetrics();
+dm.density = targetDensity;
+dm.scaledDensity = targetScaleDensity; //该方法可修改字体不随系统改变，如果要修改成字体随系统修改，可监听onCongigurationChanged，修改scaledDensity
+dm.densityDpi = targetDensityDpi;
+```
+
+**小贴士**
+
+问 ：android如何将PT,DP,SP转成PX？
+
+答：查看TypedValue里面的applyDimension()方法
