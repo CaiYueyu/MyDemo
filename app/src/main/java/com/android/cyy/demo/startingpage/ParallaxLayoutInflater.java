@@ -56,12 +56,12 @@ public class ParallaxLayoutInflater  extends LayoutInflater {
             if (a != null && a.length() > 0) {
                 //获取自定义属性的值
                 ParallaxViewTag tag = new ParallaxViewTag();
-                tag.alphaIn = a.getFloat(0, 0f);
-                tag.alphaOut = a.getFloat(1, 0f);
-                tag.xIn = a.getFloat(2, 0f);
-                tag.xOut = a.getFloat(3, 0f);
-                tag.yIn = a.getFloat(4, 0f);
-                tag.yOut = a.getFloat(5, 0f);
+                tag.alphaIn = a.getFloat(R.styleable.Starting_page_property_a_in, 0f);
+                tag.alphaOut = a.getFloat(R.styleable.Starting_page_property_a_out, 0f);
+                tag.xIn = a.getFloat(R.styleable.Starting_page_property_x_in, 0f);
+                tag.xOut = a.getFloat(R.styleable.Starting_page_property_x_out, 0f);
+                tag.yIn = a.getFloat(R.styleable.Starting_page_property_y_in, 0f);
+                tag.yOut = a.getFloat(R.styleable.Starting_page_property_y_out, 0f);
                 view.setTag(R.id.parallax_view_tag,tag);
             }
             fragment.getParallaxViews().add(view);
