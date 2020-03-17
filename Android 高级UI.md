@@ -1201,7 +1201,7 @@ displayCutout.getSafeInsetTop()
 
 使用：
 
-**1 Material Design主题**
+#### **1 Material Design主题**
 
 **API需要21以上**
 
@@ -1262,6 +1262,48 @@ displayCutout.getSafeInsetTop()
 -Explode分解
 
 -共享元素
+
+#### 2.CoordinatorLayout相关
+
+**1.CoordinatorLayout**
+
+CoordinatorLayout是用来协调其子view们之间动作的一个父view
+
+--CoordinatorLayout须作为顶层父View
+
+--子View想要与CoordinatorLayout实现"联动性"效果的首要条件是这个View必须实现了NestedScrollingChild接口 ，如RecyclerView，NestedScrollView等新的控件都实现这个接口
+
+--**只有CoordinatorLayout的直接子View才会有效果,子View的子View无效**
+
+**2.Behavior**
+
+Behavior用于当前控件的父控件CoordinatorLayout中的其他子控件的关系
+
+--使用Behavior的控件必须是直接从属于CoordinatorLayout,否者无效
+
+--自定义Behavior的时候**必须覆盖它的两参构造方法**,因为通过反射实例化的时候用的就是该构造方法.
+
+**3.AppBarLayout**
+
+作为一个容器把AppBarLayout内的所有子View"合并"成一个整体的View.
+
+AppBarLayout下的View想实现联动效果必须设置该属性,其中主要的参数包括下面几个:
+
+--scroll - 想滚动就必须设置这个。
+
+--EnterAlways - 当依赖的View向下滑动时,设置该属性的View以相同的方向滑动直到消失
+
+--exitUntilCollapsed - 配合minHeight使用.假设view的Height是300px,minHeight是200px,控件展开的话高度是300px,收缩了后最小高度会停留在200px而不是完全隐藏
+
+--enterAlwaysCollapsed：假设view的Height是300px,minHeight是200px,这时候依赖控件向下滑动,view会随着依赖view慢慢出现,直到view显示了200px后停止滑动.直到依赖控件滑到了顶部再次往下滑动剩下的100px才会出现.(有点类似下拉刷新,必须滑到第一个item再下拉才能刷新)
+
+**4.TabLayout**
+
+作用就是在Toolbar下面显示多个Tab.
+
+就是先对ViewPager进行适配,然后实例化TabLayout,然后调用tablayout.setupWithViewPager(viewPager)让tablayout和Viewpager进行关联,这样滑动viewpager,tablayout的指示器就会跟着改变,点击tablayout的指示器,Viewpager也会切换.
+
+
 
 ### 七.嵌套滑动的原理
 
