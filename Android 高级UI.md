@@ -1117,3 +1117,336 @@ dm.densityDpi = targetDensityDpi;
 问 ：android如何将PT,DP,SP转成PX？
 
 答：查看TypedValue里面的applyDimension()方法
+
+#### 6.刘海屏适配
+
+**Android 官方9.0刘海屏适配策略**
+
+--如果非全屏模式（有状态栏），app不受刘海屏影响，刘海屏的高度就是状态栏高度
+
+--如果全屏模式，app未适配刘海屏，系统会对界面做特殊处理，竖屏向下移动，横屏向右移动
+
+--适配刘海屏步骤：
+
+1.判断手机厂商
+
+2.判断手机是否有刘海屏
+
+3.设置是否让内容区域延伸进刘海
+
+4.设置空间是否避开刘海区域
+
+5.获取刘海的高度
+
+```
+//1.设置全屏
+requestWindowFeature(Window.FEATURE_NO_TITLE);
+Window window = getWindow();
+window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//2.让内容区域延伸进刘海
+WindowManager.LayoutParams params = window.getAttributes();
+/**
+*  * @see #LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT 全屏模式，内容下移，非全屏不受影响
+*  * @see #LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES 允许内容去延伸进刘海区
+*  * @see #LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER 不允许内容延伸进刘海区
+*/
+params.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+window.setAttributes(params);
+//3.设置成沉浸式
+int flags = View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
+int visibility = window.getDecorView().getSystemUiVisibility();
+visibility |= flags; //追加沉浸式
+window.getDecorView().setSystemUiVisibility(visibility);
+```
+
+判断手机是否有刘海屏
+
+```
+DisplayCutout displayCutout;
+View rootView = window.getDecorView();
+WindowInsets insets = rootView.getRootWindowInsets();
+if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && insets != null){
+    displayCutout = insets.getDisplayCutout();
+     if(displayCutout != null){
+         if(displayCutout.getBoundingRects() != null && displayCutout.getBoundingRects().size() > 0 && displayCutout.getSafeInsetTop() > 0){
+              return true;
+          }
+     }
+}
+```
+
+获取刘海屏高度，默认和状态栏高度一样
+
+```
+int resID = getResources().getIdentifier("status_bar_height", "dimen", "android");
+	if (resID > 0){
+		return getResources().getDimensionPixelSize(resID);
+	}
+return 0;
+或者通过
+displayCutout.getSafeInsetTop() 
+```
+
+**小贴士**
+
+获取View的LayoutParams需要强转成父容器的LayoutParams类型，因为不同的布局方式的LayoutParams不一样，View的LayoutParams等同于告诉父容器想要怎么布局
+
+### 六.Material Design
+
+--是将经典的设计原则和科技、创新相结合的设计语言
+
+--是一个能在不同平台，不同设备上提供一致的体验的底层系统，代表了一种设计规范
+
+[Material Design中文网站](https://www.mdui.org/design/)
+
+使用：
+
+**1 Material Design主题**
+
+**API需要21以上**
+
+--android:style/Theme.Material
+
+--android:style/Theme.Material.Light
+
+--android:style/Theme.Material.DarkActionBar
+
+**API 21以下，使用兼容主题**
+
+--Theme.AppCompat.Light
+
+--Theme.AppCompat.Light.DarkActionBar
+
+**主题常用的属性**
+
+-colorPrimary ： 标题栏的颜色
+
+-colorPrimaryDark ：状态栏颜色
+
+-colorAccent ：强调色
+
+-textColorPrimary ：标题栏上字体颜色
+
+-windowBackgroud ：窗口背景色
+
+-navigationBarColor ： 虚拟导航栏背景颜色
+
+**常用控件**
+
+-ToolBar ： 代替ActionBar，高度可定制性
+
+-DrawerLayout  ： 左拉右拉菜单，类似抽屉功能
+
+-NavigationView/BottomNavigationView ：NavigationView通常和DrawerLayout  一起使用作为侧滑菜单 ，BottomNavigationView 主要用于实现底部导航栏功能
+
+-FloatingActionButton  ：浮动按钮
+
+-Snackbar ： 提示功能
+
+-CardView ：继承FrameLayout，可设置圆角，阴影，也可以包含其他的布局容器和控件
+
+-**CoordinatorLayout** ： 继承ViewGroup，使用类似FrameLayout，有层次结构，后面的布局会覆盖前面布局，通过子View指定behavior，自定义交互行为
+
+-AppBarLayout ： 垂着线性布局，已经响应了CoordinatorLayout 的behavior属性，一般结合CoordinatorLayout 一起使用
+
+-CollapsingToolBarLayout ：折叠的toolBar，一般和CoordinatorLayout 一起使用
+
+-NestedScrollView ：支持嵌套滑动的scrollView
+
+**常用动画**
+
+-Fade淡入
+
+-Slide滑动
+
+-Explode分解
+
+-共享元素
+
+### 七.嵌套滑动的原理
+
+传统的事件分发是从上往下分发，而嵌套滑动事件是从下到上，也就是说，当一个View产生了一个嵌套滑动事件，首先会报告给它的父View，询问它父View是否处理这个事件，如果处理的话，那么子Viw就不处理了（实际上存在父View值处理部分滑动距离的情况）
+
+#### 1.嵌套滑动主要用到的接口和类
+
+1.NestedScrollingChild ：如果一个View想要能够产生嵌套滑动事件，这个View必须实现NestedScrollChild接口，从Android 5.0开始，View实现了这个接口，不需要我们手动实现
+
+2.NestedScrollingParent ：这个接口通常用来被ViewGroup来实现，表示能够接收子View发送过来的嵌套滑动事件
+
+3.NestedScrollingChildHelper ：这个类通常在实现NestedScrollingChild接口的View里面使用，负责将子View产生的嵌套滑动事件报告给父View
+
+4.NestedScrollingParentHelper ：这个类通常在实现NestedScrollingParent 接口的View里面使用，如果父View不想处理一个事件，通过NestedScrollingParentHelper 类帮助传递
+
+#### 2.子View事件的产生和传递
+
+​	整个事件传递过程中，首先能保证传统的事件能够到达该View，当一个事件序列开始时，首先会调用startNestedScroll方法来告诉父View，马上就要开始一个滑动事件了，请问爸爸需要处理，如果处理的话，会返回true，不处理返回fasle。跟传统的事件传递一样，如果不处理的话，那么该事件序列的其他事件都不会传递到父View里面。
+
+​	然后就是调用dispatchNestedPreScroll方法，这个方法调用时，子View还未真正滑动，所以这个方法的作用是子View告诉它的爸爸，此时滑动的距离已经产生，爸爸你看看能消耗多少，然后父View会根据情况消耗自己所需的距离，如果此时距离还未消耗完，剩下的距离子View来消耗，子View滑动完毕之后，会调用dispatchNestedScroll方法来告诉父View，爸爸，我已经滑动完毕，你看看你有什么要求没？这个过程里面可能有子View未消耗完的距离。
+
+​	其次就是fling事件产生，过程跟上面也是一样，也是先调用dispatchNestedPreFling方法来询问父View是否有所行动，然后调用dispatchNestedFling告诉父View，子View已经fling完毕。
+  最后就是调用stopNestedScroll表示本次事件序列结束。
+  整个过程中，我们会发现子View开始一个动作时，会询问父View是否有所表示，结束一个动作时，也会告诉父View，自己的动作结束了，父View是否有所指示。
+
+```
+public interface NestedScrollingChild {
+    /**
+     * 设置当前View是否能够产生嵌套滑动的事件
+     * @param enabled true表示能够产生嵌套滑动的事件，反之则不能
+     */
+    void setNestedScrollingEnabled(boolean enabled);
+
+    /**
+     * 判断当前View是否能够产生嵌套滑动的事件
+     * @return
+     */
+    boolean isNestedScrollingEnabled();
+
+    /**
+     * 当嵌套事件开始产生时会调用这个方法，这个方法通常是在ACTION_DOWN里面被调用
+     * @param axes axes表示方向，如果(nestedScrollAxes & ViewCompat.SCROLL_AXIS_VERTICAL) != 0 表示当前滑动方向是垂直方向
+     *            ，水平方向也是如此
+     * @return 返回true表示有父View能够处理传递传递上去的嵌套滑动事件，实际上这个这个方法里面调用NestedScrollingParent的onStartNestedScroll
+     * 方法来判断是否有父View能够处理，这个在后面源码分析时，我们具体讲解
+     */
+    boolean startNestedScroll(@ViewCompat.ScrollAxis int axes);
+
+    /**
+     * 这个方法表示本次嵌套滑动的行为结束了，通常在ACTION_UP或者ACTION_CANCEL里面调用
+     */
+    void stopNestedScroll();
+
+    /**
+     * 判断是否能够处理嵌套滑动的父View
+     * @return true表示有，反之则没有
+     */
+    boolean hasNestedScrollingParent();
+
+    /**
+     * 本方法在产生嵌套滑动的View已经滑动完成之后调用，该方法的作用是将剩余没有消耗的距离继续分发到父View里面去
+     * @param dxConsumed 表示该View在x轴上消耗的距离
+     * @param dyConsumed 表示该View在y轴上消耗的距离
+     * @param dxUnconsumed 表示该View在x轴上未消耗的距离
+     * @param dyUnconsumed 表示该View在y轴未消耗的距离
+     * @param offsetInWindow 表示该该View在屏幕上滑动的距离，包括x轴上的距离和y轴上的距离
+     * @return true表示父View消耗这部分的未消耗的距离，反之表示父View不消耗
+     */
+    boolean dispatchNestedScroll(int dxConsumed, int dyConsumed,
+            int dxUnconsumed, int dyUnconsumed, @Nullable int[] offsetInWindow);
+
+    /**
+     * 这个方法在方法调用之前调用，也就是调用这个方法时，滑动距离产生了，但是该View还未滑动。
+     * 这个方法的作用是将滑动的距离报给父View，看看父View是否优先消耗这个这部分距离
+     * @param dx x轴上产生的距离
+     * @param dy y轴上产生的距离
+     * @param consumed index为0的值表示父View在x轴消耗的的距离，index为1的值表示父View在y轴上消耗的距离
+     * @param offsetInWindow 该View在屏幕滑动的距离
+     * @return true表示父View有消耗距离，false表示父View不消耗
+     */
+    boolean dispatchNestedPreScroll(int dx, int dy, @Nullable int[] consumed,
+            @Nullable int[] offsetInWindow);
+
+    /**
+     * 如果父View不对fling事件做任何处理，那么子View会调用这个方法，这个方法的作用是报告父View，子View此时在fling
+     * 然而具体是否在fling，还要consumed为true还是false，在这方法里面会调用NestedScrollingParent的onNestedFling
+     * @param velocityX x轴上的速度
+     * @param velocityY y轴的速度
+     * @param consumed true表示子View对这个fling事件有所行动，false表示没有行动
+     * @return
+     */
+    boolean dispatchNestedFling(float velocityX, float velocityY, boolean consumed);
+
+    /**
+     * 在子View对fling有所行动之前，会调用这个方法。这个方法的作用是，用来询问父View是否对fling事件有所行动
+     * @param velocityX
+     * @param velocityY
+     * @return
+     */
+    boolean dispatchNestedPreFling(float velocityX, float velocityY);
+}
+```
+
+#### 3.父View事件的接收和消耗
+
+在系统中，没有特定ViewGroup用来接收和消耗子View传递的事件。因此，只能自己动手了。
+
+```
+public class NestedScrollLinearLayout extends LinearLayout implements NestedScrollingParent {
+  private static final int OFFSET = 200;
+  private NestedScrollingParentHelper mNestedScrollingParentHelper;
+
+  public NestedScrollLinearLayout(Context context) {
+    super(context);
+  }
+
+  public NestedScrollLinearLayout(Context context, @Nullable AttributeSet attrs) {
+    super(context, attrs);
+  }
+
+  public NestedScrollLinearLayout(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    super(context, attrs, defStyleAttr);
+  }
+
+  @Override
+  public boolean onStartNestedScroll(View child, View target, int nestedScrollAxes) {
+    return (nestedScrollAxes & ViewCompat.SCROLL_AXIS_VERTICAL) != 0;
+  }
+
+  @Override
+  public void onNestedPreScroll(View target, int dx, int dy, int[] consumed) {
+    //向下
+    if (dy < 0) {
+      if (getTranslationY() >= 0) {
+        consumed[0] = 0;
+        consumed[1] = (int) Math.max(getTranslationY() - OFFSET, dy);
+        setTranslationY(getTranslationY() - consumed[1]);
+      }
+    } else {
+      if (getTranslationY() <= OFFSET) {
+        consumed[0] = 0;
+        consumed[1] = (int) Math.min(dy, getTranslationY());
+        setTranslationY(getTranslationY() - consumed[1]);
+      }
+    }
+  }
+
+  @Override
+  public void onNestedScrollAccepted(View child, View target, int axes) {
+    getNestedScrollingParentHelper().onNestedScrollAccepted(child, target, axes);
+  }
+
+  @Override
+  public void onStopNestedScroll(View child) {
+    getNestedScrollingParentHelper().onStopNestedScroll(child);
+  }
+
+
+  @Override
+  public void onNestedScroll(View target, int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed) {
+  }
+
+  @Override
+  public boolean onNestedFling(View target, float velocityX, float velocityY, boolean consumed) {
+    return false;
+  }
+
+  @Override
+  public boolean onNestedPreFling(View target, float velocityX, float velocityY) {
+    return false;
+  }
+
+  private NestedScrollingParentHelper getNestedScrollingParentHelper() {
+    if (mNestedScrollingParentHelper == null) {
+      mNestedScrollingParentHelper = new NestedScrollingParentHelper(this);
+    }
+    return mNestedScrollingParentHelper;
+  }
+}
+```
+
+在整个实现过程中，我们发现，我们只对onStartNestedScroll方法和onNestedPreScroll方法做了我们自己的实现，其他的要么空着，要么就是通过NestedScrollingParentHelper来帮助我们来实现。整个过程比较清晰和明了。
+  不过，这其中，我们需要注意的是，每个方法的含义和调用的时机。`onStartNestedScroll`方法对应子View的`startNestedScroll`方法,当子View调用`startNestedScroll`方法会回调父View的`onStartNestedScroll`方法。其他方法也是类似的，不过需要注意的是，通常子View的方法都是以dispatch开头的，父View的方法都是以on开头的。
+  对于NestedScrollingParnet这一块，感觉没有需要注意的，因为这部分需要咱们自己实现，而实现这部分的功能，需要了解子View的是怎么将事件传递到父View。
+
+[Android 源码分析 - 嵌套滑动机制的实现原理]: https://www.jianshu.com/p/cb3779d36118
+
+
