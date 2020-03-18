@@ -1305,6 +1305,82 @@ AppBarLayout下的View想实现联动效果必须设置该属性,其中主要的
 
 
 
+#### 3.沉浸式
+
+**android 4.4版本沉浸式可通过如下两种方式**
+
+1.可通过设置AppTheme，添加一个属性
+
+```
+<item name="android:windowTranslucentStatus">true</item>
+<item name="android:windowTranslucentNavigation">true</item>
+```
+
+2.代码设置
+
+```
+getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+```
+
+**android 5.0或者以上版本沉浸式设置**
+
+1.获取window，清除状态栏透明标志位
+
+2.添加window标志位FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
+
+3.window.setStatusBarColor(Color.TRANSPARENT); 设置状态栏透明
+
+```
+Window window = getWindow();
+window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+//设置状态栏颜色透明
+window.setStatusBarColor(Color.TRANSPARENT);
+
+int visibility = window.getDecorView().getSystemUiVisibility();
+//布局内容全屏展示
+visibility |= View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
+//隐藏虚拟导航栏
+visibility |= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+//防止内容区域大小发生变化
+visibility |= View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
+
+window.getDecorView().setSystemUiVisibility(visibility);
+```
+
+**小贴士**
+
+如果有toolbar，上面两种方式都会有toolbar被状态栏盖住的问题，这个时候则需要获取状态栏的高度，将toolbar向下移动状态栏的高度
+
+```
+ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
+layoutParams.height += getStatusBarHeight(context);
+view.setPadding(view.getPaddingLeft(), view.getPaddingTop() + getStatusBarHeight(context), view.getPaddingRight(), view.getPaddingBottom());
+```
+
+#### 4.CardView
+
+CardView的属性：
+
+第二第三个属性一般会设置，考虑系统兼容性
+
+```
+    <!--app:cardBackgroundColor="@color/colorPrimary"  设置cardView背景色 -->
+    <!--app:cardPreventCornerOverlap="false" 取消Lollipop以下版本的padding -->
+    <!--app:cardUseCompatPadding="true" 为 Lollipop 及其以上版本增加一个阴影padding内边距-->
+    <!--app:cardCornerRadius="8dp" 设置cardView圆角效果-->
+    <!--app:cardElevation="10dp" 设置cardView Z轴阴影大小-->
+    <!--app:cardMaxElevation="6dp" 设置cardView Z轴最大阴影-->
+    <!--app:contentPadding="10dp" 设置内容的内边距-->
+    <!--app:contentPaddingBottom="12dp" 设置内容的底部内边距-->
+    <!--app:contentPaddingLeft="12dp" 设置内容的左边内边距-->
+    <!--app:contentPaddingRight="12dp" 设置内容的右边内边距-->
+    <!--app:contentPaddingTop="12dp" 设置内容的顶部内边距-->
+```
+
+
+
 ### 七.嵌套滑动的原理
 
 传统的事件分发是从上往下分发，而嵌套滑动事件是从下到上，也就是说，当一个View产生了一个嵌套滑动事件，首先会报告给它的父View，询问它父View是否处理这个事件，如果处理的话，那么子Viw就不处理了（实际上存在父View值处理部分滑动距离的情况）
@@ -1490,5 +1566,9 @@ public class NestedScrollLinearLayout extends LinearLayout implements NestedScro
   对于NestedScrollingParnet这一块，感觉没有需要注意的，因为这部分需要咱们自己实现，而实现这部分的功能，需要了解子View的是怎么将事件传递到父View。
 
 [Android 源码分析 - 嵌套滑动机制的实现原理]: https://www.jianshu.com/p/cb3779d36118
+
+
+
+#### 
 
 
