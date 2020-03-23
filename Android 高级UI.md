@@ -50,14 +50,17 @@ UNSPECIFIED //父容器不对View做任何限制，系统内部使用
 EXACTLY //父容器检测出View的大小，View的大小就是SpecSize或者LayoutParams 。对应match_parent
 AT_MOST //父容器指定容器大小，View的大小不能超过这个大小，对应wrap_content
 
-获取顶层view（decorView）的测量规格在viewRootImpl 中的getRootMeasureSpec（）方法中,主要由窗口大小和自身的LayoutParams属性来决定，
+获取顶层view（decorView）的测量规格在viewRootImpl 中的getRootMeasureSpec（）方法中。**对于顶层View（DecorView），它的MeasureSpec则是由窗口的尺寸和自身的LayoutParams决定的**
 遵守如下规则
 1.当LayoutParams.MATCH_PARENT : 精确模式，大小为窗口大小
 2.当LayoutParams.WRAP_CONTENT : 最大模式，大小最大为窗口大小
 3.固定大小 ： 精确模式，大小为LayoutParams大小
 
-View的MeasureSpec由父容器的MeasureSpec和自身的LayoutParams决定
+**View的MeasureSpec由父容器的MeasureSpec和自身的LayoutParams决定**
+
 参考ViewGroup的getChildMeasureSpec()方法中。
+
+
 
 总结如下表：
 
@@ -71,6 +74,20 @@ View的MeasureSpec由父容器的MeasureSpec和自身的LayoutParams决定
 
 ViewGroup： measure-->onMeasure(测量子控件的宽高)-->setMeasuredDimension-->setMeasuredDimensionRaw保存自身宽高
 View : measure-->onMeasure()-->getDefaultSize-->setMeasuredDimension-->setMeasuredDimensionRaw保存自身宽高
+
+
+
+**小贴士**
+
+在Activity的onCreate，onStart,onResume能否获取到View的高宽？
+
+答：不能，因为View的measure和Activity的生命周期不是同步的，因此无法保证在Activity这些生命周期执行的时候，View已经完成测量了。解放方法：
+
+1.在onWindowFocusChanged这个方法去获取，但onWindowFocusChanged这个方法会被频繁调用。2.view.post(runnable) 通过post将一个runnable投递到消息队列的尾部，等待Looper调用runnable的时候，View已经初始化好了
+
+3.使用ViewTreeObserver的OnGlobalLayoutListener，也同样存在调用多次的可能性
+
+
 
 #### 4.View的布局
 
@@ -146,7 +163,7 @@ setShader（Shader shader）
 
 5.ComposeShader：组合渲染，例如LinearGradient  + BitmapShader
 
-###### 1.LinearGradient线性渲染
+**1.LinearGradient线性渲染**
 
 构造方法：
 
@@ -172,7 +189,7 @@ LinearGradient(float x0, float y0, float x1, float y1, @NonNull @ColorInt int co
 ////               CLAMP， 绘制区域超过渲染区域的部分，会以最后一个像素拉伸排版
 ////               MIRROR, 绘制区域超过渲染区域的部分，镜像翻转排版
 
-###### 2.RadialGradient环形渲染
+**2.RadialGradient环形渲染**
 
 ```
 RadialGradient(float centerX, float centerY, float radius, @ColorInt int colors[], @Nullable float stops[], TileMode tileMode)
@@ -190,7 +207,7 @@ RadialGradient(float centerX, float centerY, float radius, @ColorInt int colors[
 
 （tileMode）：同线性渲染的tile
 
-###### 3.SweepGradient扫描渲染
+**3.SweepGradient扫描渲染**
 
 ```
 SweepGradient(float cx, float cy, @ColorInt int color0,int color1)
@@ -202,7 +219,7 @@ SweepGradient(float cx, float cy, @ColorInt int color0,int color1)
 
 （colors，positions）：类似LinearGradient，用于多颜色渐变，positions为null是，根据颜色线性渐变
 
-###### 4.BitmapShader位图渲染
+**4.BitmapShader位图渲染**
 
 ```
 BitmapShader(@NonNull Bitmap bitmap, @NonNull TileMode tileX, @NonNull TileMode tileY)
@@ -214,7 +231,7 @@ BitmapShader(@NonNull Bitmap bitmap, @NonNull TileMode tileX, @NonNull TileMode 
 
 （tileY）：Y轴方向的TileMode
 
-###### 5.ComposeShader组合渲染
+**5.ComposeShader组合渲染**
 
 ```
 ComposeShader(@NonNull Shader shaderA, @NonNull Shader shaderB, Xfermode mode)
@@ -227,9 +244,9 @@ ComposeShader(@NonNull Shader shaderA, @NonNull Shader shaderB, PorterDuff.Mode 
 
 （PorterDuff.Mode mode）：组合两种shader颜色的模式
 
-##### 4.Paint 颜色相关
+##### 4.Paint 颜色相关图层混合模式/滤镜
 
-###### 1.图层混合模式 PorterDuff.Mode
+**1.图层混合模式 PorterDuff.Mode**
 
 概念：将所绘制图形的像素与Canvas中所对应位置的像素按照一定规则混合，形成新的像素值，更新Canvas中最终的像素颜色值。有18种模式
 
@@ -291,7 +308,7 @@ int layerId = canvas.saveLayer(0,0, getWidth(), getHeight(), mPaint, Canvas.ALL_
         setLayerType(LAYER_TYPE_SOFTWARE,null);//使用一个Bitmap来缓冲
 ```
 
-###### 2.图层混合的18种模式
+**2.图层混合的18种模式**
 
 ```
 //其中Sa全称为Source alpha表示源图的Alpha通道；Sc全称为Source color表示源图的颜色；Da全称为Destination alpha表示目标图的Alpha通道；Dc全称为Destination color表示目标图的颜色，[...,..]前半部分计算的是结果图像的Alpha通道值，“,”后半部分计算的是结果图像的颜色值。
@@ -340,7 +357,7 @@ int layerId = canvas.saveLayer(0,0, getWidth(), getHeight(), mPaint, Canvas.ALL_
     };
 ```
 
-###### 3.滤镜效果 LightColorFilter
+**3.滤镜效果 LightColorFilter**
 
 1.作用：可以模仿光照效果
 
@@ -357,7 +374,7 @@ LightingColorFilter lighting = new LightingColorFilter(0x00ffff,0x000000)
 paint.setColorFilter(lighting)
 ```
 
-###### 4.PorterDuffColorFilter滤镜（图层混合）
+**4.PorterDuffColorFilter滤镜（图层混合）**
 
 1.作用 ：根据构造方法传入的color创建一个新的图层，再根据混合模式进行图层混合
 
@@ -376,7 +393,7 @@ PorterDuffColorFilter porterDuffColorFilter = new PorterDuffColorFilter(Color.RE
 paint.setColorFilter(porterDuffColorFilter);
 ```
 
-###### 5.ColorMatrixColorFilter滤镜（颜色数组）
+**5.ColorMatrixColorFilter滤镜（颜色数组）**
 
 1.作用：通过传入色彩矩阵来处理图像色彩效果
 
@@ -1567,28 +1584,49 @@ public class NestedScrollLinearLayout extends LinearLayout implements NestedScro
 
 [Android 源码分析 - 嵌套滑动机制的实现原理]: https://www.jianshu.com/p/cb3779d36118
 
-
 ### 八.自定义控件
 
-#### 1.自绘控件
+#### 1.五种自定义View的类型
+
+**1.自绘控件**
 
 View所展现的内容全部是自己绘制出来，主要代码写在onDraw()方法里面，通常直接继承View（比如：卡片，动画展示等）
 
-#### 2.组合控件
+**2.组合控件**
 
 不需要自己去绘制视图上的内容，将系统原生的控件组合到一起
 
-#### 3.继承控件
+**3.继承控件**
 
 继承现有的控件，增加一些新的功能（比如继承ImageView）
 
-#### 4.事件类控件
+**4.事件类控件**
 
 通常需要处理触摸事件，并且会消费事件。大多数事件类控件需要结合重绘方法来进行，比如：刮刮乐
 
-#### 5.容器类控件
+**5.容器类控件**
 
 为实现具体开发而开发的自定义容器，比如百分比布局
+
+#### 2.自定义View须知
+
+**1.让View支持wrap_content**
+
+直接继承View或者ViewGroup的控件，如果不在onMeasure对wrap_content做特殊处理，那么当外界在布局时，使用wrap_content就无法达到预期效果。如果不处理，wrap_content实际效果和match_parent一样，可以通过获取SpecMode，如果是AT_MOST,那么设置固定值
+
+**2.如果有必要，让View支持padding**
+
+因为直接继承View，如果不在draw方法中处理padding，那么padding属性是失效的，如果是继承ViewGroup，则需要考虑在onMeasure和onLayout中考虑padding和子元素的margin对其造成的影响，不然padding和margin将失效
+
+**3.尽量不要在View中使用Handler，因为没必要**
+
+因为View中已经提供了post系列的方法，除非很明确需要用handler来发送消息
+
+**4.如果View中有线程或者动画，需要及时停止**
+
+不然很容易导致内存泄漏，在onDetachedFromWindow方法在停止线程和动画
+
+**5.如果View带有滑动嵌套，需要处理好滑动冲突**
 
 
 
