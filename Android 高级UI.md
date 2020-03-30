@@ -1649,5 +1649,45 @@ RecyclerView一般做为Android显示列表的控件，有诸多优异的性能
 3.**RecyclerView**：做触摸事件的交互，主要实现边界判断，根据用户的触摸反馈，协调回收池对象与适配器对象直接的工作
 
 
+### 十.SVG矢量图使用
 
+#### 1.SVG介绍
+
+1.是一种基于可扩展标记语言（XML），用于描述二维矢量图形的图形格式。SVG由W3C制定，是一个开放标准
+
+后续相关补充 ： 参考 ： https://www.jianshu.com/p/0555b8c1d26a
+
+#### 2.自定义SVG控件
+
+1.获取资源文件的svg,取得取得DocumentBuilderFactory实例
+
+```
+final InputStream inputStream = context.getResources().openRawResource(R.raw.china);
+DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance(); 
+DocumentBuilder builder = null; //从factory获取DocumentBuilder实例
+```
+
+2.解析输入流，得到Document实例
+
+```
+builder = factory.newDocumentBuilder();
+Document doc = builder.parse(inputStream);   //解析输入流 得到Document实例
+Element rootElement = doc.getDocumentElement();
+NodeList items = rootElement.getElementsByTagName("path");
+```
+
+3.解析document实例
+
+```
+for (int i = 0; i < items.getLength(); i++) {
+    Element element = (Element) items.item(i);
+    String pathData = element.getAttribute("android:pathData");
+    @SuppressLint("RestrictedApi")
+    Path path = PathParser.createPathFromPathData(pathData);
+}
+```
+
+4.在onDraw方法里面根据path进行绘制
+
+**小贴士**：1,2,3步放异步线程进行，毕竟这是耗时的操作
 
