@@ -12,11 +12,11 @@
 
 **视图结构如下图所示**：
 
-![decorView视图结构](https://github.com/CaiYueyu/MyDemo/blob/master/image/decorView%E8%A7%86%E5%9B%BE%E7%BB%93%E6%9E%84.png?raw=true)
+![decorView视图结构](https://upload-images.jianshu.io/upload_images/15934587-09f46cb8004a1603.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 **类图结构如下：**
 
-![类图结构](https://github.com/CaiYueyu/MyDemo/blob/master/image/decorView%E7%B1%BB%E5%9B%BE%E7%BB%93%E6%9E%84.png?raw=true)
+![类图结构](https://upload-images.jianshu.io/upload_images/15934587-6d47f52c92c8b173.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 1.Activity持有抽象window类
 
@@ -432,61 +432,13 @@ float[] colorMatrix = {
 4.关于色彩矩阵
 
 在Android中，系统使用一个颜色矩阵--ColorMatrix来处理图像的色彩效果，对于图像的每个像素点，都有一个颜色分量矩阵用来保存颜色的RGBA值（如下图矩阵C），Android中的颜色矩阵是一个4 * 5的数字矩阵，它用来对图片的色彩进行处理（如矩阵A）：
-$$
-A=\left[
-\matrix{
-	a&b&c&d&e\\
-	f&g&h&i&j\\
-	k&l&m&n&o\\
-	p&q&r&s&t
-}
-\right]
-C=\left[
-\matrix{
-	R\\
-	G\\
-	B\\
-	A\\
-	1
-}
-\right]
-$$
+
+![](https://upload-images.jianshu.io/upload_images/15934587-cd36eaf9fc784aca.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+
 如果我们想要改变一张图像的色彩显示效果，我们会用矩阵的乘法运算来修改颜色分量矩阵的值，在Android中，它会以一个一位数组的形式来存储[a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t],而C是一个颜色矩阵分量，在处理图像时，使用矩阵乘法运算AC来处理颜色分量矩阵，如下：
-$$
-R=AC=\left[
-\matrix{
-	a&b&c&d&e\\
-	f&g&h&i&j\\
-	k&l&m&n&o\\
-	p&q&r&s&t
-}
-\right]
-\left[
-\matrix{
-	R\\
-	G\\
-	B\\
-	A\\
-	1
-}
-\right]
-=\left[
-\matrix{
-	aR&bG&cB&dA&e\\
-	fR&gG&hB&iA&j\\
-	kR&lG&mB&nA&o\\
-	pR&qG&rB&sA&t
-}
-\right]
-=\left[
-\matrix{
-	R1\\
-	G1\\
-	B1\\
-	A1
-}
-\right]
-$$
+
+![](https://upload-images.jianshu.io/upload_images/15934587-2f14d1160f0fb889.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+
 利用线性代数知识可知：
 
 ```
@@ -515,15 +467,9 @@ R1 = aR + bG + cB + dA + e
 ```
 
 令a=1，b，c，d，e都为0，则有R1 = R，同理对第二，三，四行进行操作，可以构造出一个矩阵，如下：
-$$
-A=\left[\matrix{
-	1&0&0&0&0\\
-	0&1&0&0&0\\
-	0&0&1&0&0\\
-	0&0&0&1&0
-}
-\right]
-$$
+
+![](https://upload-images.jianshu.io/upload_images/15934587-eb9088878ba8e978.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+
 把该矩阵带入公式R=AC公式中，可得R1=R，G1=G，B1=B，A1=A，不会对原有颜色进行任何修改，则该矩阵称为初始颜色矩阵。
 
 **如果修改颜色值，通常有两种方法**
@@ -731,7 +677,7 @@ ACTION_CANCEL :非人为因素取消
 
 2.点击屏幕后滑动一会在松开，事件序列为：DOWN->MOVE->....MOVE->UP
 
-![](.\image\事件序列.png)
+![](https://upload-images.jianshu.io/upload_images/15934587-550f752dd496b42e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 #### 3.事件分发对象
 
@@ -904,7 +850,7 @@ public boolean onTouchEvent(MotionEvent event){
 
 #### 8.View事件分发整体流程
 
-![](.\image\事件分发模型.png)
+![](https://upload-images.jianshu.io/upload_images/15934587-839aad6da427cac8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 #### 9.事件分发结论
 
@@ -942,13 +888,13 @@ public boolean onTouchEvent(MotionEvent event){
 
 具体的工作原理逻辑如下：
 
-![](.\image\属性动画的工作原理.webp)
+![](https://upload-images.jianshu.io/upload_images/15934587-06c10ec9f1d54cfb.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 #### 2.两种属性动画类
 
 1.`ValueAnimator` 是属性动画机制中 最核心的一个类，通过不断控制值的变化，**再不断 手动 赋给对象的属性，从而实现动画效果**，如下图：
 
-![](.\image\属性动画的工作原理.webp)
+![](https://upload-images.jianshu.io/upload_images/15934587-949175ed4f331a18.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 2.ObjectAnimator类，直接对对象的属性值进行改变操作，从而实现动画效果
 
@@ -959,7 +905,7 @@ public boolean onTouchEvent(MotionEvent event){
 
 本质原理： 通过不断控制 值 的变化，再不断 **自动** 赋给对象的属性，从而实现动画效果，
 
-![](.\image\ObjectAnimator类.webp)
+![](https://upload-images.jianshu.io/upload_images/15934587-0ba157a0cc1966c5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 #### 3.关键帧
 
@@ -969,7 +915,7 @@ public boolean onTouchEvent(MotionEvent event){
 
 动画架构分析图如下
 
-![](.\image\动画架构分析图.png)
+![](https://upload-images.jianshu.io/upload_images/15934587-eb19c5487da316b0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 由上图可知，由于关键帧直接是有时间间隔的，所以需要在两个关键帧之间去实现补帧，这就需要用到**估值器TypeEvaluator和插值器TimeInterpolator **
 
@@ -978,6 +924,8 @@ public boolean onTouchEvent(MotionEvent event){
 1.**TimeInterpolator（时间插值器）：**
 
 根据时间流逝的百分比计算出当前属性值改变的百分比。**简单来说就是改变对象属性的速度快慢**，比如View缩放越来越快，或者越来越慢。
+
+![](https://upload-images.jianshu.io/upload_images/15934587-712b7ca3e316e14d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 2.**TypeEvaluator（类型估值算法，即估值器）：**
 

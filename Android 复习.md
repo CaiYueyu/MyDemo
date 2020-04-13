@@ -228,7 +228,7 @@ REST 的定义众说纷纭，没有统一答案。
 
 **经典算法**：DES(56位),AES（128位，192位，256位密钥，现在最流行）
 
-![](./image/对称加密.png)
+![](https://upload-images.jianshu.io/upload_images/15934587-4fa4df884516f9d8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 **作用**：加密通信，防止信息在不安全网络上被截获后，信息被读取或者篡改
 
@@ -240,11 +240,11 @@ REST 的定义众说纷纭，没有统一答案。
 
 使用非对称加密通信，可以在不可信网络上将双方的公钥传给对方，然后在发消息前分别对消息使用对方的公钥来加密和使用自己的私钥来签名。
 
-![](./image/非对称加密.png)
+![](https://upload-images.jianshu.io/upload_images/15934587-fc9cb139a92fa8ca.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 由于公钥和私钥相互可解，因此非对称加密可以用于数字签名技术
 
-![](./image/非对称加密签名.png)
+![](https://upload-images.jianshu.io/upload_images/15934587-558f5e22cbb672c3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 **经典算法**：RSA(可用于加密和签名)，DSA(仅用于签名，但速度更快)
 
